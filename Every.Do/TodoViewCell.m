@@ -13,6 +13,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *todoTitle;
 @property (weak, nonatomic) IBOutlet UILabel *todoPriority;
 @property (weak, nonatomic) IBOutlet UILabel *todoDescription;
+@property (weak, nonatomic) UISwipeGestureRecognizer* swipeRight;
+
 
 
 @end
@@ -43,7 +45,7 @@
     if(self.todo.isCompleted)
     {
         self.todoPriority.text = @"Completed";
-        self.alpha = 0.7;
+        self.contentView.alpha = 0.2;
     }
 //    switch (self.todo.priority) {
 //        case 1:

@@ -15,6 +15,8 @@
 @interface MasterViewController () <SaveTodoDelegate>
 
 @property NSMutableArray *todoDataSource;
+@property UISwipeGestureRecognizer* swipeRight;
+
 @end
 
 @implementation MasterViewController
@@ -28,6 +30,8 @@
     self.navigationItem.rightBarButtonItem = addButton;
     
     self.todoDataSource = [NSMutableArray arrayWithArray:[self setupTodos]];
+    self.swipeRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedRight:)];
+    [self.tableView addGestureRecognizer:self.swipeRight];
 }
 
 
@@ -121,11 +125,34 @@
     
 }
 
+
+
 -(void) saveNewTodo:(Todo *)newTodo
 {
     [self.todoDataSource insertObject:newTodo atIndex:0];
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
     [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
 
+}
+- (void)swipedRight:(UISwipeGestureRecognizer *)sender {
+    
+    CGPoint location = [sender locationInView:self.tableView];
+    NSInteger swipedRow = (NSInteger)(location.y / self.tableView.rowHeight);
+    NSLog(@"swiped row %ld", swipedRow );
+    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:swipedRow inSection:0];
+
+    TodoViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    
+    Todo* cellTodo = cell.todo;
+    
+    cellTodo.isCompleted =YES;
+    
+    [self.todoDataSource removeObject:cellTodo];
+    [self.todoDataSource addObject:cellTodo];
+    cell.todo = cellTodo;
+    
+    [self.tableView beginUpdates];
+    [self.tableView moveRowAtIndexPath:indexPath toIndexPath:[NSIndexPath indexPathForRow:self.todoDataSource.count-1 inSection:0]];
+    [self.tableView endUpdates];
 }
 @end
